@@ -24,7 +24,10 @@ public:
 	}
 	~Application()
 	{
-		delete[]modules;
+		for (int i = 0; i < NUM_MODULES; ++i)
+		{
+			delete modules[i];
+		}
 	}
 
 	// INIT all modules
@@ -62,6 +65,7 @@ public:
 	update_status Update() {
 		for (int i = 0; i < NUM_MODULES; ++i)
 		{
+			modules[i]->Update();
 			if (modules[i]->Update() == UPDATE_ERROR) return update_status::UPDATE_STOP;
 		}
 		return update_status::UPDATE_CONTINUE;
@@ -79,7 +83,7 @@ public:
 	// TODO 3: Make sure all modules have a chance to cleanup
 	bool CleanUp()
 	{
-		for (int i = NUM_MODULES; i > 0; --i)
+		for (int i = NUM_MODULES - 1; i > 0; --i)
 		{
 			if (modules[i]->CleanUp() == false) return false;
 			
