@@ -11,7 +11,7 @@ enum main_states
 	MAIN_EXIT
 };
 
-int main()
+int main(int argc, char* argv[])
 {
 	ReportMemoryLeaks();
 
@@ -63,22 +63,27 @@ int main()
 
 			case MAIN_FINISH:
 			{
+				//App->CleanUp();
+				LOG("\nApplication modules cleanUp----------");
+
 				if (App->CleanUp() == false)
 				{
-					LOG("\nApplication exit with errors");
-					state = MAIN_EXIT;
-					return EXIT_FAILURE;
+					LOG("\nApplication cleanUp exit with errors");
+					//state = MAIN_EXIT;
+					//return EXIT_FAILURE;
 				}
 				else
 				{
-					LOG("\nApplication exits success");
-					//state = MAIN_FINISH;
-					return EXIT_SUCCESS;
+					LOG("\nApplication cleanUp exits success---------");
+					//state = MAIN_EXIT;
+					main_return = EXIT_SUCCESS;
 				}
-			}
+				state = MAIN_EXIT;
+			} break;
 		}
 	}
-
+	
+	//App->~Application();
 	delete(App);
 	LOG("\nBye :)\n");
 	// TODO 6: Remove ALL memory leaks

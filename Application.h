@@ -4,8 +4,10 @@
 #include "Globals.h"
 #include "Module.h"
 #include "Dummy.h"
+#include "DummyESC.h"
+#include "QSS_module.h"
 
-#define NUM_MODULES 1
+#define NUM_MODULES 3
 
 class Application
 {
@@ -18,13 +20,15 @@ public:
 	Application()
 	{
 		modules[0] = new ModuleDummy();
+		modules[1] = new ModuleDummyESC();
+		modules[2] = new QSS_module();
 		// TODO 7: Create your new module "DummyESC"
 		// it should check if player it ESC key use kbhit()
 		// http://www.cprogramming.com/fod/kbhit.html
 	}
 	~Application()
 	{
-		for (int i = 0; i < NUM_MODULES; ++i)
+		for (int i = NUM_MODULES - 1; i >= 0; --i)
 		{
 			delete modules[i];
 		}
@@ -35,10 +39,10 @@ public:
 	{
 		for (int i = 0; i < NUM_MODULES; ++i)
 		{
-			modules[i]->Init();
-			if (modules[i]->Init() == UPDATE_STOP)
+			//modules[i]->Init();
+			if (modules[i]->Init() == false)
 			{
-				//LOG("\nApp Init error");
+				LOG("\nApp Init error");
 				return false;
 			}
 		}
@@ -52,42 +56,47 @@ public:
 	}
 
 	// TODO 4: Add PreUpdate and PostUpdate calls
-	/*update_status PreUpdate() {
-		for (int i = 0; i < NUM_MODULES; ++i)
-		{
-			modules[i]->PreUpdate();
-			//return update_status::UPDATE_CONTINUE;
-		}
-	}*/
 	
 	// UPDATE all modules
 	// TODO 2: Make sure all modules receive its update
 	update_status Update() {
-		for (int i = 0; i < NUM_MODULES; ++i)
+
+		for (int i = 0; i < NUM_MODULES; ++i) ////////////PreUpdate
 		{
-			modules[i]->Update();
-			if (modules[i]->Update() == UPDATE_ERROR) return update_status::UPDATE_STOP;
+			//modules[i]->PreUpdate();
+			if (modules[i]->PreUpdate() == UPDATE_STOP) return update_status::UPDATE_STOP;
+
 		}
+		for (int i = 0; i < NUM_MODULES; ++i) ///////////Update
+		{
+		
+			//modules[i]->Update();
+			if (modules[i]->Update() == UPDATE_STOP) return update_status::UPDATE_STOP;
+		}
+		for (int i = 0; i < NUM_MODULES; ++i) ////////////PostUpdate
+		{
+			//modules[i]->PostUpdate();
+			if (modules[i]->PostUpdate() == UPDATE_STOP) return update_status::UPDATE_STOP;
+
+		}
+
 		return update_status::UPDATE_CONTINUE;
 	}
 
-	/*update_status PostUpdate() {
-		for (int i = 0; i < NUM_MODULES; ++i)
-		{
-			modules[i]->PostUpdate();
-			//return update_status::UPDATE_CONTINUE;
-		}
-	}*/
-
 	// EXIT Update 
+
+
 	// TODO 3: Make sure all modules have a chance to cleanup
 	bool CleanUp()
 	{
-		for (int i = NUM_MODULES - 1; i > 0; --i)
+		
+		for (int i = NUM_MODULES - 1; i >= 0; --i) //inverse order than creation
 		{
 			if (modules[i]->CleanUp() == false) return false;
+			//LOG("CleanUp Failed");
 			
 		}
+		LOG("\nCleanUp complete");
 		return true;
 	}
 
